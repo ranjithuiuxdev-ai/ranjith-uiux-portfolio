@@ -44,7 +44,9 @@ h4,
 h5 {
     font-family: 'sora', sans-serif;
 }
-
+.proj-img_placeholder{
+    display: none;
+}
 .playfair {
     font-family: 'sora Display', serif !important;
 }
