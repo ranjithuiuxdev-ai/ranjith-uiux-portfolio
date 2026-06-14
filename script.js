@@ -17,6 +17,63 @@ hamburger.addEventListener('click', () => toggleMobileNav());
 closeNav.addEventListener('click', () => toggleMobileNav(false));
 document.querySelectorAll('.mob-l').forEach(l => l.addEventListener('click', () => toggleMobileNav(false)));
 
+const secureWarning = document.createElement('div');
+secureWarning.className = 'secure-warning';
+secureWarning.setAttribute('role', 'alert');
+secureWarning.textContent = 'This page is secure.';
+document.body.appendChild(secureWarning);
+
+let secureWarningTimer;
+
+function showSecureWarning(message = 'This page is secure.') {
+    secureWarning.textContent = message;
+    secureWarning.classList.add('show');
+    clearTimeout(secureWarningTimer);
+    secureWarningTimer = setTimeout(() => secureWarning.classList.remove('show'), 5000);
+}
+
+document.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    showSecureWarning();
+});
+
+document.addEventListener('copy', e => {
+    e.preventDefault();
+    showSecureWarning('Copy is restricted on this secure page.');
+});
+
+document.addEventListener('cut', e => {
+    e.preventDefault();
+    showSecureWarning('Copy is restricted on this secure page.');
+});
+
+const pressedKeys = new Set();
+
+document.addEventListener('keydown', e => {
+    const key = e.key.toLowerCase();
+    const code = e.code.toLowerCase();
+    pressedKeys.add(key);
+    pressedKeys.add(code);
+    const controlKey = e.ctrlKey || e.metaKey;
+    const isCtrlAS = controlKey && (key === 's' || code === 'keys') && (pressedKeys.has('a') || pressedKeys.has('keya'));
+    const isInspectShortcut = e.key === 'F12'
+        || (controlKey && e.shiftKey && ['i', 'j', 'c', 'k'].includes(key))
+        || (controlKey && e.altKey && ['i', 'j', 'c', 's'].includes(key))
+        || (controlKey && ['c', 'r', 'u', 's'].includes(key))
+        || isCtrlAS;
+
+    if (isInspectShortcut) {
+        e.preventDefault();
+        e.stopPropagation();
+        showSecureWarning();
+    }
+}, true);
+
+document.addEventListener('keyup', e => {
+    pressedKeys.delete(e.key.toLowerCase());
+    pressedKeys.delete(e.code.toLowerCase());
+});
+
 /* ─── REVEAL ─── */
 const revObs = new IntersectionObserver(entries => {
     entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); revObs.unobserve(e.target); } });
@@ -101,6 +158,7 @@ if (projTabs) {
 
 /* â”€â”€â”€ WHATSAPP CONTACT FORM â”€â”€â”€ */
 const sendWhatsAppBtn = document.getElementById('sendWhatsApp');
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 if (sendWhatsAppBtn) {
     sendWhatsAppBtn.addEventListener('click', () => {
@@ -114,10 +172,31 @@ if (sendWhatsAppBtn) {
             return;
         }
 
+        if (!emailPattern.test(email)) {
+            alert('Please enter a valid Email Address.');
+            document.getElementById('contactEmail').focus();
+            return;
+        }
+
         const fullName = [firstName, lastName].filter(Boolean).join(' ');
         const whatsappMessage = `Hello Ranjith,\n\nName: ${fullName}\nEmail: ${email}\n\nMessage:\n${message}`;
         const whatsappUrl = `https://wa.me/917418623767?text=${encodeURIComponent(whatsappMessage)}`;
 
         window.open(whatsappUrl, '_blank');
+    });
+}
+
+const backToTopBtn = document.getElementById('backToTop');
+
+if (backToTopBtn) {
+    window.addEventListener('scroll', () => {
+        backToTopBtn.classList.toggle('show', window.scrollY > 350);
+    });
+
+    backToTopBtn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
     });
 }
