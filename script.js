@@ -1,9 +1,21 @@
 
 
 /* ─── MOBILE NAV ─── */
-document.getElementById('hamburger').addEventListener('click', () => document.getElementById('mobileNav').classList.add('open'));
-document.getElementById('closeNav').addEventListener('click', () => document.getElementById('mobileNav').classList.remove('open'));
-document.querySelectorAll('.mob-l').forEach(l => l.addEventListener('click', () => document.getElementById('mobileNav').classList.remove('open')));
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobileNav');
+const closeNav = document.getElementById('closeNav');
+
+function toggleMobileNav(forceOpen) {
+    const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !mobileNav.classList.contains('open');
+
+    mobileNav.classList.toggle('open', shouldOpen);
+    hamburger.classList.toggle('active', shouldOpen);
+    hamburger.setAttribute('aria-expanded', String(shouldOpen));
+}
+
+hamburger.addEventListener('click', () => toggleMobileNav());
+closeNav.addEventListener('click', () => toggleMobileNav(false));
+document.querySelectorAll('.mob-l').forEach(l => l.addEventListener('click', () => toggleMobileNav(false)));
 
 /* ─── REVEAL ─── */
 const revObs = new IntersectionObserver(entries => {
