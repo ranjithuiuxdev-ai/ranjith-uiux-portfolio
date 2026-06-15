@@ -5,6 +5,31 @@ const hamburger = document.getElementById('hamburger');
 const mobileNav = document.getElementById('mobileNav');
 const closeNav = document.getElementById('closeNav');
 
+/* HERO MOUSE MOVEMENT */
+const heroSection = document.getElementById('home');
+
+if (heroSection) {
+    function setPointer(clientX, clientY) {
+        const rect = heroSection.getBoundingClientRect();
+        const pointerX = clientX - rect.left;
+        const pointerY = clientY - rect.top;
+        const isActive = pointerX >= 0 && pointerX <= rect.width && pointerY >= 0 && pointerY <= rect.height;
+
+        if (!isActive) return;
+        const moveX = ((pointerX / rect.width) - 0.5).toFixed(3);
+        const moveY = ((pointerY / rect.height) - 0.5).toFixed(3);
+
+        heroSection.style.setProperty('--mouse-x', moveX);
+        heroSection.style.setProperty('--mouse-y', moveY);
+    }
+
+    heroSection.addEventListener('pointermove', e => setPointer(e.clientX, e.clientY));
+    heroSection.addEventListener('pointerleave', () => {
+        heroSection.style.setProperty('--mouse-x', 0);
+        heroSection.style.setProperty('--mouse-y', 0);
+    });
+}
+
 function toggleMobileNav(forceOpen) {
     const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !mobileNav.classList.contains('open');
 
